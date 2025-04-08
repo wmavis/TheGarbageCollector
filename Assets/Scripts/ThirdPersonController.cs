@@ -9,8 +9,19 @@ public class ThirdPersonController : MonoBehaviour
     public float rollSpeed = 17f;
     public bool isRolling;
     public Camera mainCamera;
+    public Vector3 moveDirection;
     Rigidbody rb;
     Animator animator;
+
+    // Jump
+    public float playerHeight = 2f;
+    public GameObject groundCheckPoint;
+    public float groundCheckDistance = 0.5f;
+    public LayerMask whatIsGround;
+    public float jumpForce = 7f;
+    public float jumpCooldown = 0.25f;
+    public bool grounded;
+    public bool readyToJump = true;
 
     float horizontalInput;
     float verticalInput;
@@ -25,8 +36,16 @@ public class ThirdPersonController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // ground check
+        float distanceToGround = playerHeight * groundCheckDistance;
+
+        grounded = Physics.Raycast(groundCheckPoint.transform.position, Vector3.down, distanceToGround, whatIsGround);
+
+        animator.SetBool("IsGrounded", grounded);
+
         Movement();
         Roll();
+        Jump();
     }
 
     void Movement()
@@ -41,7 +60,7 @@ public class ThirdPersonController : MonoBehaviour
         cameraForward.Normalize();
         cameraRight.Normalize();
 
-        Vector3 moveDirection = (cameraForward * verticalInput + cameraRight * horizontalInput).normalized;
+        moveDirection = (cameraForward * verticalInput + cameraRight * horizontalInput).normalized;
 
         rb.AddForce(moveDirection * movementSpeed, ForceMode.Force);
 
@@ -61,13 +80,13 @@ public class ThirdPersonController : MonoBehaviour
 
     void Roll()
     {
-        if(Input.GetKeyDown(KeyCode.F) && !isRolling)
+        if (Input.GetKeyDown(KeyCode.F) && !isRolling)
         {
             animator.SetTrigger("Roll");
 
             Vector3 rollDirection;
 
-            if(horizontalInput == 0)
+            if (horizontalInput == 0)
             {
                 Vector3 cameraForward = mainCamera.transform.forward;
 
@@ -93,12 +112,33 @@ public class ThirdPersonController : MonoBehaviour
 
         float startTime = Time.time;
 
-        while(Time.time < startTime + rollDistance / rollSpeed)
+        while (Time.time < startTime + rollDistance / rollSpeed)
         {
             rb.MovePosition(rb.position + rollDirection * rollSpeed * Time.deltaTime);
             yield return null;
         }
 
         isRolling = false;
+    }
+
+    void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && readyToJump && grounded)
+        {
+            readyToJump = false;
+
+            animator.SetTrigger("StartJump");
+
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+
+            Invoke(nameof(ResetJump), jumpCooldown);
+        }
+    }
+
+    void ResetJump()
+    {
+        readyToJump = true;
     }
 }

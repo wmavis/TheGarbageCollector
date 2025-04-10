@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ThirdPersonController : MonoBehaviour
@@ -22,6 +23,8 @@ public class ThirdPersonController : MonoBehaviour
     public float jumpCooldown = 0.25f;
     public bool grounded;
     public bool readyToJump = true;
+    // Aiming
+    public GameObject combatCamera;
 
     float horizontalInput;
     float verticalInput;
@@ -46,6 +49,7 @@ public class ThirdPersonController : MonoBehaviour
         Movement();
         Roll();
         Jump();
+        StartAiming();
     }
 
     void Movement()
@@ -140,5 +144,21 @@ public class ThirdPersonController : MonoBehaviour
     void ResetJump()
     {
         readyToJump = true;
+    }
+
+    void StartAiming()
+    {
+        if(Input.GetMouseButtonDown((int)MouseButton.Right))
+        {
+            animator.SetBool("IsAiming", true);
+            combatCamera.SetActive(true);
+        }
+
+        if(Input.GetMouseButtonUp((int)MouseButton.Right))
+        {
+            animator.SetBool("IsAiming", false);
+            combatCamera.SetActive(false);
+        }
+
     }
 }

@@ -25,9 +25,11 @@ public class ThirdPersonController : MonoBehaviour
     public bool readyToJump = true;
     // Aiming
     public GameObject combatCamera;
+    public GameObject reticle;
 
     float horizontalInput;
     float verticalInput;
+    bool isAiming;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -50,6 +52,7 @@ public class ThirdPersonController : MonoBehaviour
         Roll();
         Jump();
         StartAiming();
+        Shoot();
     }
 
     void Movement()
@@ -152,13 +155,31 @@ public class ThirdPersonController : MonoBehaviour
         {
             animator.SetBool("IsAiming", true);
             combatCamera.SetActive(true);
+            reticle.SetActive(true);
+
+            isAiming = true;
+            AimCamera aimCameraScript = combatCamera.GetComponent<AimCamera>();
+            aimCameraScript.StartAiming();
         }
 
         if(Input.GetMouseButtonUp((int)MouseButton.Right))
         {
             animator.SetBool("IsAiming", false);
             combatCamera.SetActive(false);
-        }
+            reticle.SetActive(false);
 
+            isAiming = false;
+            AimCamera aimCameraScript = combatCamera.GetComponent<AimCamera>();
+            aimCameraScript.StopAiming();
+        }
+    }
+
+    void Shoot()
+    {
+        if(Input.GetMouseButtonDown(0) && isAiming)
+        {
+            GetComponent<ShootingSystem>().Shoot();
+            animator.SetTrigger("Shoot");
+        }
     }
 }

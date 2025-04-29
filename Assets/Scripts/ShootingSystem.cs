@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class ShootingSystem : MonoBehaviour
@@ -5,13 +6,15 @@ public class ShootingSystem : MonoBehaviour
     public Transform firePoint;
     public GameObject bulletPrefab;
     public GameObject muzzleFlash;
+    public TextMeshProUGUI ammoText;
     public float fireRate = 1f;
     private float nextTimeToFire = 0f;
+    public float bullets = 5;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -31,16 +34,33 @@ public class ShootingSystem : MonoBehaviour
 
     private void FireBullet()
     {
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        GameObject muzzle = Instantiate(muzzleFlash, firePoint.position, firePoint.rotation);
-        Rigidbody bulletRb = bullet.transform.GetChild(0).GetComponent<Rigidbody>();
-
-        if(bulletRb != null)
+        if(bullets > 0)
         {
-            bulletRb.linearVelocity = transform.forward * 300f;
-        }
+            GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            GameObject muzzle = Instantiate(muzzleFlash, firePoint.position, firePoint.rotation);
+            Rigidbody bulletRb = bullet.transform.GetChild(0).GetComponent<Rigidbody>();
 
-        Destroy(bullet, 10f);
-        Destroy(muzzle, 2f);
+            bullets--;
+            ammoText.text = bullets.ToString();
+
+            if(bulletRb != null)
+            {
+                bulletRb.linearVelocity = transform.forward * 300f;
+            }
+
+            Destroy(bullet, 10f);
+            Destroy(muzzle, 2f);
+        }
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Ammo")
+        {
+            Destroy(other.gameObject);
+
+            bullets += 5;
+            ammoText.text = bullets.ToString();
+        }
     }
 }

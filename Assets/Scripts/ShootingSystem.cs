@@ -10,6 +10,7 @@ public class ShootingSystem : MonoBehaviour
     public float fireRate = 1f;
     private float nextTimeToFire = 0f;
     public float bullets = 5;
+    public float bulletVelocity = 20f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -45,7 +46,7 @@ public class ShootingSystem : MonoBehaviour
 
             if(bulletRb != null)
             {
-                bulletRb.linearVelocity = transform.forward * 300f;
+                bulletRb.linearVelocity = transform.forward * bulletVelocity;
             }
 
             Destroy(bullet, 10f);

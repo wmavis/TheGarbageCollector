@@ -30,7 +30,7 @@ public class AimCamera : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(mouseY, mouseX, 0);
 
-        if(isAiming)
+        if (isAiming)    
         {
             Vector3 aimDirection = transform.forward;
             gun.forward = aimDirection;

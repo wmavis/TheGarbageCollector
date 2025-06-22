@@ -31,11 +31,15 @@ public class ThirdPersonController : MonoBehaviour
     float verticalInput;
     bool isAiming;
 
+    public AudioClip aimingSFX;
+    AudioSource audioSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -159,7 +163,10 @@ public class ThirdPersonController : MonoBehaviour
 
             isAiming = true;
             AimCamera aimCameraScript = combatCamera.GetComponent<AimCamera>();
-            aimCameraScript.StartAiming();
+                aimCameraScript.StartAiming();
+
+            audioSource.clip = aimingSFX;
+            audioSource.Play();
         }
 
         if(Input.GetMouseButtonUp((int)MouseButton.Right))
